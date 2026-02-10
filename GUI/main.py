@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import messagebox
 from tkinter import font
+from tkinter import ttk
 
 # functions
 
@@ -27,7 +28,7 @@ def clearAll():
         taskListBox.delete(0, tk.END)
         messagebox.showinfo("All tasks have been removed.")
 
-
+# renumber the tasks when added/removed and moved up/down
 def listRenumber():
     current_items = [taskListBox.get(i) for i in range(taskListBox.size())]
     taskListBox.delete(0, tk.END)
@@ -83,8 +84,8 @@ def moveDown():
 # window
 window = tk.Tk()
 window.title("To-Do List")
-window.geometry("600x360")
-window.resizable(False, True)
+window.geometry("600x500")
+window.resizable(False, False)
 window.configure(bg="#f0f4f8")
 
 defafultFont = font.nametofont("TkDefaultFont")
@@ -93,10 +94,10 @@ defafultFont.configure(size=12)
 # label instructions (widget 1)
 labelInstruction = tk.Label(
     window,
-    text="Enter a task and click Add, or select one to Remove",
+    text="Enter a task and click Add",
     bg="#f0f4f8",
     fg="#2d3748",
-    font=("Helvetica", 10),
+    font=("Helvetica", 12),
 )
 labelInstruction.pack(pady=(12, 6))
 
@@ -143,83 +144,75 @@ scrollbar.config(command=taskListBox.yview)
 frameButtons = tk.Frame(window, bg="#f0f4f8")
 frameButtons.pack(pady=12)
 
-addBtn = tk.Button(
+# ttk styles for colored buttons
+style = ttk.Style()
+try:
+    style.theme_use('clam')
+except tk.TclError:
+    pass
+
+style.configure('Green.TButton', background='#69346a', foreground='#f0f4f8', font=("Helvetica", 10))
+style.map('Green.TButton', background=[('active', "#69346a")])
+
+style.configure('Orange.TButton', background='#2B7974', foreground='#f0f4f8', font=("Helvetica", 10))
+style.map('Orange.TButton', background=[('active', "#2B7974")])
+
+style.configure('Red.TButton', background='#873333', foreground='#f0f4f8', font=("Helvetica", 10))
+style.map('Red.TButton', background=[('active', "#873333")])
+
+style.configure('Blue.TButton', background='#1a202c', foreground='#f0f4f8', font=("Helvetica", 10))
+style.map('Blue.TButton', background=[('active', '#1a202c')])
+
+addBtn = ttk.Button(
     frameButtons,
     text="Add Task",
     command=taskAdd,
-    font=("Helvetica", 10),
-    bg="#48bb78",
-    fg="#f0f4f8",
-    activebackground="#38a169",
-    activeforeground="#f0f4f8",
-    relief="flat",
-    padx=16,
-    pady=6,
+    style='Green.TButton',
+    padding=(16, 6),
     cursor="hand2",
 )
 addBtn.pack(side=tk.LEFT, padx=6)
 
-removeBtn = tk.Button(
+removeBtn = ttk.Button(
     frameButtons,
-    text="Remove Selected",
+    text="Remove Task",
     command=taskRemove,
-    font=("Helvetica", 10),
-    bg="#ed8936",
-    fg="#f0f4f8",
-    activebackground="#dd6b20",
-    activeforeground="#f0f4f8",
-    relief="flat",
-    padx=16,
-    pady=6,
+    style='Orange.TButton',
+    padding=(16, 6),
     cursor="hand2",
 )
 removeBtn.pack(side=tk.LEFT, padx=6)
 
-clearBtn = tk.Button(
+clearBtn = ttk.Button(
     frameButtons,
     text="Clear All",
     command=clearAll,
-    font=("Helvetica", 10),
-    bg="#e53e3e",
-    fg="#f0f4f8",
-    activebackground="#c53030",
-    activeforeground="#f0f4f8",
-    relief="flat",
-    padx=16,
-    pady=6,
+    style='Red.TButton',
+    padding=(16, 6),
     cursor="hand2",
 )
 clearBtn.pack(side=tk.LEFT, padx=6)
 
-# move buttons
-moveUpBtn = tk.Button(
-    frameButtons,
+# move buttons on their own row
+frameMoveButtons = tk.Frame(window, bg="#f0f4f8")
+frameMoveButtons.pack(pady=(6, 12))
+
+moveUpBtn = ttk.Button(
+    frameMoveButtons,
     text="Move Up",
     command=lambda: moveUp(),
-    font=("Helvetica", 10),
-    bg="#63b3ed",
-    fg="#f0f4f8",
-    activebackground="#4299e1",
-    activeforeground="#f0f4f8",
-    relief="flat",
-    padx=12,
-    pady=6,
+    style='Blue.TButton',
+    padding=(12, 6),
     cursor="hand2",
 )
 moveUpBtn.pack(side=tk.LEFT, padx=6)
 
-moveDownBtn = tk.Button(
-    frameButtons,
+moveDownBtn = ttk.Button(
+    frameMoveButtons,
     text="Move Down",
     command=lambda: moveDown(),
-    font=("Helvetica", 10),
-    bg="#63b3ed",
-    fg="#f0f4f8",
-    activebackground="#4299e1",
-    activeforeground="#f0f4f8",
-    relief="flat",
-    padx=8,
-    pady=6,
+    style='Blue.TButton',
+    padding=(12, 6),
     cursor="hand2",
 )
 moveDownBtn.pack(side=tk.LEFT, padx=6)
@@ -228,3 +221,31 @@ moveDownBtn.pack(side=tk.LEFT, padx=6)
 # start the GUI
 if __name__ == "__main__":
     window.mainloop()
+    
+    
+'''
+1. What does your program do?
+    My program allows users to add new tasks, remove a selected task, clear all tasks, 
+    and move them up or down. The task list is displayed in a scrollable listbox. Empty
+    inputs are rejected by the program with a warning message displayed afterwards.
+    
+2. How does the user interact with it?
+    The user is able to:
+    - Type in a task in the entry box at the top and either presses the Enter key or 
+    clicks "Add Task" to add it to the list.
+    - Remove a selected task by selecting the desired task and then clicking on "Remove 
+    Task" to remove that task.
+    - Clear all tasks by clicking "Clear All" then yes to ensure that the user doesn't
+    accidently clear the task list.
+    - Move tasks up and down by selecting the desired task and then clicking either "Move
+    Up" or "Move Down" to rearrange the position of the task on the list.
+
+3. Where is user input handled?
+    User input is handled in the taskAdd() function through enterTask.get(). The text is
+    stripped of leading & trailing blank spaces before validation. The Remove, Clear All,
+    Move Up, and Move Down actions use thet listbox selection (curselection()) or the full 
+    list's content (no typing required for those).
+
+4. Where is program logic implemented?
+    
+'''
