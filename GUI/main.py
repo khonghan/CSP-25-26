@@ -42,7 +42,7 @@ def listRenumber():
                 raw = parts[1]
         taskListBox.insert(tk.END, f"{i}. {raw}")
 
-
+# select task and move it up in the list
 def moveUp():
     sel = taskListBox.curselection()
     if not sel:
@@ -61,7 +61,7 @@ def moveUp():
     taskListBox.selection_set(idx - 1)
     listRenumber()
 
-
+# select task and move it down in the list
 def moveDown():
     sel = taskListBox.curselection()
     if not sel:
@@ -141,8 +141,8 @@ taskListBox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
 scrollbar.config(command=taskListBox.yview)
 
 # buttons (event triggers)
-frameButtons = tk.Frame(window, bg="#f0f4f8")
-frameButtons.pack(pady=12)
+frameActButtons = tk.Frame(window, bg="#f0f4f8")
+frameActButtons.pack(pady=12)
 
 # ttk styles for colored buttons
 style = ttk.Style()
@@ -164,7 +164,7 @@ style.configure('Blue.TButton', background='#1a202c', foreground='#f0f4f8', font
 style.map('Blue.TButton', background=[('active', '#1a202c')])
 
 addBtn = ttk.Button(
-    frameButtons,
+    frameActButtons,
     text="Add Task",
     command=taskAdd,
     style='Green.TButton',
@@ -174,7 +174,7 @@ addBtn = ttk.Button(
 addBtn.pack(side=tk.LEFT, padx=6)
 
 removeBtn = ttk.Button(
-    frameButtons,
+    frameActButtons,
     text="Remove Task",
     command=taskRemove,
     style='Orange.TButton',
@@ -184,7 +184,7 @@ removeBtn = ttk.Button(
 removeBtn.pack(side=tk.LEFT, padx=6)
 
 clearBtn = ttk.Button(
-    frameButtons,
+    frameActButtons,
     text="Clear All",
     command=clearAll,
     style='Red.TButton',
@@ -247,5 +247,5 @@ if __name__ == "__main__":
     list's content (no typing required for those).
 
 4. Where is program logic implemented?
-    
+
 '''
