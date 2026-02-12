@@ -247,5 +247,11 @@ if __name__ == "__main__":
     list's content (no typing required for those).
 
 4. Where is program logic implemented?
-
+    - taskAdd() has input validation where it checks if the taskText is empty, if it is then
+    it shows a warning and returns to the progam without adding.
+    - taskRemove() uses try and except on curselection() to handle the case when nothing has
+    been selected.
+    - clearAll() clears all tasks in the list after confirmation.
+    - listRenumber() renumbers the tasks after either adding, removing, or reordering tasks.
+    - moveUp() and moveDown() move the selected task up or down in the list.
 '''
