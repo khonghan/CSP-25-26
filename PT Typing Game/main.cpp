@@ -66,7 +66,7 @@ struct gameStats {
 
 struct gameSettings{
     testType testMode = testType::WORDS;
-    int wordCount = 15;
+    int wordCount = 10;
     int timeLimit = 30; // seconds for time mode
     std::string customText = "";
     bool includePunctuation = false;
