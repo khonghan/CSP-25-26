@@ -1,5 +1,5 @@
 ---
 triple:          'arm64-apple-darwin'
-binary-path:     '/Users/hankhong/Documents/CSP 25-26/PT Typing Game/main'
+binary-path:     main
 relocations:     []
 ...

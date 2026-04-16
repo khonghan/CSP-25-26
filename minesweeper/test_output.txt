@@ -1,0 +1,165 @@
+Test Case 1: Winning the game
+----- MINESWEEPER -----
+Board size (width): 3
+Number of mines (1-8): 1
+
+(s = select, f = (un)flag | e.g. 's 2 3')
+
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  -  -  - 
+ 1  -  -  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 0 1
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  -  -  - 
+ 1  1  -  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 0 2
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  -  1  0 
+ 1  1  1  0 
+ 2  0  0  0 
+
+Congrats you win!
+
+==================================================
+
+Test Case 2: Losing the game
+----- MINESWEEPER -----
+Board size (width): 3
+Number of mines (1-8): 1
+
+(s = select, f = (un)flag | e.g. 's 2 3')
+
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  -  -  - 
+ 1  -  -  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 0 0
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  M  1  0 
+ 1  1  1  0 
+ 2  0  0  0 
+
+BOOM! Game over.
+
+==================================================
+
+Test Case 3: Flagging mines
+----- MINESWEEPER -----
+Board size (width): 3
+Number of mines (1-8): 2
+
+(s = select, f = (un)flag | e.g. 's 2 3')
+
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  -  -  - 
+ 1  -  -  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): f 0 0
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  -  - 
+ 1  -  -  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): f 1 1
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  -  - 
+ 1  -  F  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 0 1
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  -  - 
+ 1  2  F  - 
+ 2  -  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 0 2
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  -  - 
+ 1  2  F  - 
+ 2  1  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 1 0
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  2  - 
+ 1  2  F  - 
+ 2  1  -  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 1 2
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  2  - 
+ 1  2  F  - 
+ 2  1  1  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 2 0
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  2  1 
+ 1  2  F  - 
+ 2  1  1  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 2 1
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  2  1 
+ 1  2  F  1 
+ 2  1  1  - 
+
+Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): s 2 2
+
+Current Board:
+    0  1  2 
+   ---------
+ 0  F  2  1 
+ 1  2  F  1 
+ 2  1  1  1 
+
+Congrats you win!
+
+==================================================
+

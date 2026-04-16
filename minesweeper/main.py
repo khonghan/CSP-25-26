@@ -1,151 +1,206 @@
 from random import randint
 
 class boardSpot(object):
-    value = 0
-    selected = False
-    mine = False
-    flagged = False
-    
     def __init__(self) -> None:
+        self.value = 0          # 0-8 = safe, -1 = mine
         self.selected = False
+        self.mine = False
         self.flagged = False
-        
+    
     def __str__(self) -> str:
-        return str(boardSpot.value)
+        return str(self.value)
     
     def isMine(self):
-        if boardSpot.value == -1:
-            return True
-        return False
+        return self.value == -1
     
 class classBoard(object):
-    def __init__(self, i_boardSize, i_numMines) -> None:
-        self.board = [[boardSpot() for i in range(i_boardSize)] for j in range(i_boardSize)]
+    def __init__(self, i_boardSize, i_numMines, mines = None) -> None:
+        self.board = [[boardSpot() for _ in range(i_boardSize)] for _ in range(i_boardSize)]
         self.boardSize = i_boardSize
         self.numMines = i_numMines
         self.selectableSpots = i_boardSize * i_boardSize - i_numMines
         
-        i = 0
-        while i < i_numMines:
-            x = randint(0, self.boardSize-1)
-            y = randint(0, self.boardSize-1)
-            if not self.board[x][y].mine:
+        if mines:
+            for x, y in mines:
                 self.addMine(x, y)
-                i += 1
-            else:
-                i -= 1
+        else:
+            # randomly place mines (no dupes)
+            placed = 0
+            while placed < i_numMines:
+                x = randint(0, self.boardSize-1)
+                y = randint(0, self.boardSize-1)
+                if not self.board[x][y].mine:
+                    self.addMine(x, y)
+                    placed += 1
                 
     def __str__(self) -> str:
-        returnString = " "
-        divider = "\n---"
+        colW = max(3, len(str(self.boardSize - 1)) + 2)
         
-        for i in range(0, self.boardSize):
-            returnString += " | " + str(i)
-            divider += "----"
-        divider += "\n"
-        returnString += divider
+        header = "   "
+        for i in range(self.boardSize):
+            header += str(i).center(colW)
+        divider = "   " + "-" * (colW * self.boardSize)
+        
+        lines = [header, divider]
         
         for y in range(0, self.boardSize):
-            returnString += str(y)
-            for x in range(0, self.boardSize):
-                if self.board[x][y].flagged:
-                    returnString += " | F"
-                if self.board[x][y].mine and self.board[x][y].selected:
-                    returnString += " |" + str(self.board[x][y].value)
-                elif self.board[x][y].selected:
-                    returnString += " | " + str(self.board[x][y])
+            rowStr = str(y).rjust(2) + " "
+            for x in range(self.boardSize):
+                spot = self.board[x][y]
+                if spot.flagged and not spot.selected:
+                    cell = "F"
+                elif spot.selected and spot.mine:
+                    cell = "M"
+                elif spot.selected:
+                    cell = str(spot.value)
                 else:
-                    returnString += " | "
-            returnString += " |"
-            returnString += divider
-        return returnString
+                    cell = "-"
+                rowStr += cell.center(colW)
+            lines.append(rowStr)
+        return "\n".join(lines)
                     
     def addMine(self, x, y):
         self.board[x][y].value = -1
         self.board[x][y].mine = True
-        for i in range(x - 1, x + 2):
-            if i >= 0 and i < self.boardSize:
-                if y - 1 >= 0 and not self.board[i][y - 1].mine:
-                    self.board[i][y - 1].value += 1
-                if y + 1 < self.boardSize and not self.board[i][y + 1].mine:
-                    self.board[i][y + 1].value += 1
-            if x - 1 >= 0 and not self.board[x - 1][y].mine:
-                self.board[x - 1][y].value += 1
-            if x + 1 < self.boardSize and not self.board[x + 1][y].mine:
-                self.board[x + 1][y].value += 1
+        
+        for nx in range(x - 1, x + 2):
+            for ny in range(y - 1, y + 2):
+                if nx == x and ny == y:
+                    continue
+                if 0 <= nx < self.boardSize and 0 <= ny < self.boardSize:
+                    if not self.board[nx][ny].mine:
+                        self.board[nx][ny].value += 1
                 
     def makeMove(self, x, y):
-        self.board[x][y].selected = True
-        self.selectableSpots -= 1
-        if self.board[x][y].value == -1:
-            return False
-        if self.board[x][y].value == 0:
-            for i in range(x - 1, x + 2):
-                if i >= 0 and i < self.boardSize:
-                    if y - 1 >= 0 and not self.board[i][y - 1].selected:
-                        self.makeMove(i, y - 1)
-                    if y + 1 < self.boardSize and not self.board[i][y + 1].selected:
-                        self.makeMove(i, y + 1)
-            if x - 1 >= 0 and not self.board[x + 1][y].selected:
-                self.makeMove(x - 1, y)
-            if x + 1 < self.boardSize and not self.board[x + 1][y].selected:
-                self.makeMove(x + 1, y)
-            return True
-        else:
+        spot = self.board[x][y]
+        
+        if spot.selected or spot.flagged:
             return True
         
+        spot.selected = True
+        self.selectableSpots -= 1
+        
+        if spot.mine:
+            return False
+        
+        if spot.value == 0:
+            for nx in range(x - 1, x + 2):
+                for ny in range(y - 1, y + 2):
+                    if nx == x and ny == y:
+                        continue
+                    if 0 <= nx < self.boardSize and 0 <= ny < self.boardSize:
+                        if not self.board[nx][ny].selected:
+                            self.makeMove(nx, ny)
+                            
+        return True
+    
+    def revealAll(self):
+        for x in range(self.boardSize):
+            for y in range(self.boardSize):
+                self.board[x][y].selected = True
+        
     def toggleFlag(self, x, y):
-        if not self.board[x][y].selected:
-            self.board[x][y].flagged = not self.board[x][y].flagged
+        spot = self.board[x][y]
+        if not spot.selected:
+            spot.flagged = not spot.flagged
             return True
+        print("Can't flag a revealed cell.")
         return False
         
     def hitMine(self, x, y):
-        return self.board[x][y].value == -1
+        return self.board[x][y].mine
     
     def isWinner(self):
         return self.selectableSpots == 0
     
-def play():
-    boardSize = int(input("Choose the width of the board: "))
-    numMines = int(input("Choose the number of mines: "))
-        
+def getCoords(boardSize):
+    while True:
+        raw = input("Enter action and coordinates (e.g., 's 2 3' or 'f 1 4'): ").strip().split()
+        if len(raw) != 3:
+            print("  Please enter an action and 2 numbers (e.g., 's 2 3').")
+            continue
+        action = raw[0].lower()
+        if action not in ('s', 'f'):
+            print("  Invalid action. Use 's' to select or 'f' to flag.")
+            continue
+        try:
+            x, y = int(raw[1]), int(raw[2])
+        except ValueError:
+            print(" Coordinates must be integers.")
+            continue
+        if not (0 <= x < boardSize and 0 <= y < boardSize):
+            print(f"  Coordinates must be between 0 and {boardSize -1}.")
+            continue
+        return action, x, y
+    
+def play(mines=None):
+    print("----- MINESWEEPER -----")
+    
+    while True:
+        try:
+            boardSize = int(input("Board size (width): "))
+            print(boardSize)
+            if boardSize < 2:
+                print("  Board must be at least 2x2.")
+                continue
+            break
+        except ValueError:
+            print("  Please enter a whole number.")
+            
+    maxMines = boardSize * boardSize - 1
+    while True:
+        try:
+            numMines = int(input(f"Number of mines (1-{maxMines}): "))
+            print(numMines)
+            if not (1 <= numMines <= maxMines):
+                print(f"  Must be between 1 and {maxMines}.")
+                continue
+            break
+        except ValueError:
+            print("  Please enter a whole number.")
+            
+    board = classBoard(boardSize, numMines, mines)
     gameOver = False
     winner = False
     
-    board = classBoard(boardSize, numMines)
+    print("\n(s = select, f = (un)flag | e.g. 's 2 3')\n")
     
     while not gameOver:
+        print("\nCurrent Board:")
         print(board)
-        print("(s for select, f for flag)\n(e.g., 's 1 2')\n")
-        userInput = input("Enter action and coordinates: ").split()
+        print()
         
-        if len(userInput) != 3:
-            print("Invalid input format.")
-            continue
+        action, x, y = getCoords(boardSize)
+        print(f"{action} {x} {y}")
         
-        action, strX, strY = userInput
-        try:
-            x, y = int(strX), int(strY)
-        except ValueError:
-            print("Invalid coordinates.")
-            continue
-        
-        if action == 's':
-            pass
-        elif action == 'f':
+        if action == 'f':
             board.toggleFlag(x, y)
-        else:
-            print("Invalid action. Use 's' or 'f'.")
-        
-        if board.isWinner() and gameOver == False:
+        elif action == 's':
+            spot = board.board[x][y]
+            if spot.selected:
+                print("  Cell already revealed.")
+                continue
+            elif spot.flagged:
+                print("  Unflag the cell first ('f') before selecting.")
+                continue
+            
+            safe = board.makeMove(x, y)
+            
+            if not safe:
+                board.revealAll()
+                print("\nCurrent Board:")
+                print(board)
+                print("\nBOOM! Game over.")
+                gameOver = True
+                
+        if not gameOver and board.isWinner():
+            print("\nCurrent Board:")
+            print(board)
+            print("\nCongrats you win!")
             gameOver = True
-            winner = True
             
-        print(board)
-        if winner:
-            print("Congrats, you won!")
-        else:
-            print("Game over, you hit a mine!")
-            
-play()
+if __name__ == "__main__":
+    try:
+        play()
+    except KeyboardInterrupt:
+        print("\nGame exited.")
